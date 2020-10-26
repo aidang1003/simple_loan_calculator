@@ -3,6 +3,28 @@ from flask import render_template, request
 
 app = Flask(__name__)
 
+class Loan:
+    def __init__(self, loanAmount, numberYears, annualRate):        
+        self.loanAmount = loanAmount
+        self.annualRate = annualRate
+        self.numberOfPmts = numberYears * 12 #monthly pmts
+        self.periodicIntRate = self.annualRate / 12
+        self.discountFactor = 0.0
+        self.loanPmt = 0
+        
+    def getDiscountFactor(self):
+        return self.discountFactor    
+    def calculateDiscountFactor(self):        
+        self.discountFactor = (((1.0 + self.periodicIntRate) ** self.numberOfPmts) - 1.0) / (self.periodicIntRate * (1.0 + self.periodicIntRate) ** self.numberOfPmts)
+        
+    def calculateLoanPmt(self):        
+        self.calculateDiscountFactor()        
+        self.loanPmt = self.loanAmount / self.getDiscountFactor() 
+        
+    def getLoanPmt(self):        
+        return self.loanPmt
+
+
 @app.route('/')
 def index():
     return render_template('index.html', pageTitle='Homepage')
@@ -12,16 +34,17 @@ def mnthlyPmt():
     if request.method == "POST":
         form = request.form
         loanAmt = float(form['loanAmt'])
-        lengthOfLoan = float(form['lengthOfLoan'])
-        intRate = float(form['intRate'])
-        print('++++++++')
-        print(loanAmt)
-        print(lengthOfLoan)
-        print(intRate)
-        calc = (loanAmt/((1 + intRate)**lengthOfLoan)) / (((1+intRate)**lengthOfLoan)*intRate)
-        print(calc)
-        #return render_template('index.html', display=calc, pageTitle="My Calculator")
-    return render_template('monthlyPayment.html', pageTitle='Monthly Payment')
+        numberYears = float(form['lengthOfLoan'])
+        annualRate = float(form['intRate'])
+        
+        loan = Loan(loanAmt, numberYears, annualRate)
+
+        loan.calculateLoanPmt()
+        monthlyLoanPmt = loan.getLoanPmt()
+        print(monthlyLoanPmt)
+        
+        return render_template('index.html', monthlyPmt=monthlyLoanPmt)
+    return render_template('index.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
