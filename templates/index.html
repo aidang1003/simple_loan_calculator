@@ -10,13 +10,13 @@
 
 <form method="POST" action="monthlyPmt" id="calculateLoan">
     <label for="loanAmt">Loan Amount:</label><br>
-    <input type="text" id="loanAmt" name="loanAmt" placeholder= 'In USD (1500)' required autofocus><br>
+    <input type="text" id="loanAmt" name="loanAmt" placeholder= 'In USD (1500)' pattern="\d{1,}" required autofocus><br>
 <br>
     <label for="lengthOfLoan">Length of Loan:</label><br>
-    <input type="text" id="lengthOfLoan" name="lengthOfLoan" placeholder="In Years (30)" required><br>
+    <input type="text" id="lengthOfLoan" name="lengthOfLoan" placeholder="In Years (30)" pattern="\d{1,}" required><br>
 <br>
     <label for="intRate">Interest Rate:</label><br>
-    <input type="text" id="intRate" name="intRate" placeholder='In Decimal (.05)' required><br>
+    <input type="number" id="intRate" name="intRate" placeholder='In Decimal (.05)' min="0.0" max="1.0" step=".001" required><br>
 <br>
 
 <input type="submit" value="Submit">
